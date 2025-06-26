@@ -1,50 +1,16 @@
 from google.adk.agents import LlmAgent
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
-from google.adk.artifacts import InMemoryArtifactService
-from google.adk.tools import ToolContext
-from google.genai import types
-import uuid
-import asyncio
-import os
+from doc_agent.tools import doc_tools
 
-from tools import doc_tools
-
-APP_NAME = "test_app"
-USER_ID = "test_user_456"
-SESSION_ID = uuid.uuid4().hex
 MODEL_NAME = "gemini-2.0-flash"
 
-os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = "TRUE"
-os.environ['GOOGLE_CLOUD_PROJECT'] = "default-krozario"
-os.environ['GOOGLE_CLOUD_LOCATION'] = "us-central1"
-os.environ["AGENT_ENGINE_ID"] = "1263761072779689984"
 
-
-def get_user_upload(tool_context: ToolContext) -> dict:
-
-    with open("./doc_agent/user_uploads/screenshot.png", "rb") as user_upload:
-         data = user_upload.read()
-
-    tool_context.save_artifact(
-        filename="screenshot.png", 
-        artifact=types.Part(
-            inline_data=types.Blob(
-                mime_type = "image/png",
-                data = data
-        ))
-    )
-
-    return {"status": "OK"}
-
-
-document_agent = LlmAgent(
+aadhar_agent = LlmAgent(
     model=MODEL_NAME,
-    name="document_agent",
-    description="Retrieves the capital city using a specific tool.",
+    name="aadhar_agent",
+    description="Extracts Data from a document",
     instruction="""
-    You will be provided with a document. 
-    Your task is to extract the first name, last name, and address from the document.
+    You are customer service agent at a bank in India.
+    Your task is to extract the first name, last name and address from an aadhar card
     Here is the document:
     """,
     output_schema=doc_tools.DocumentData,
@@ -52,73 +18,84 @@ document_agent = LlmAgent(
     disallow_transfer_to_peers=True
 )
 
-async def call_agent_and_print(
-    runner_instance: Runner,
-    user_id: str,
-    session_id: str,
-    user_content: types.Content
-):
-    """Sends a query to the specified agent/runner and prints results."""
-
-    final_response_content = "No final response received."
-    async for event in runner_instance.run_async(user_id=user_id, session_id=session_id, new_message=user_content):
-        if event.is_final_response() and event.content and event.content.parts:
-            # For output_schema, the content is the JSON string itself
-            final_response_content = event.content.parts[0].text
-
-    return final_response_content
-
-
-if __name__ == "__main__":
-    session_service = InMemorySessionService()
-    session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
-    artifact_service = InMemoryArtifactService()
-
-    document_runner = Runner(
-        agent=document_agent,
-        app_name=APP_NAME,
-        session_service=session_service,
-        artifact_service=artifact_service
-    ) 
-
-    with open("./doc_agent/user_uploads/screenshot.png", "rb") as user_upload:
-        data = user_upload.read()
-    query='What is the name in the document?'
-    
-    user_content = types.Content(role='user', parts=[
-        types.Part(text=query),
-        types.Part(inline_data=types.Blob(
-            mime_type = "image/png",
-            data = data
-        ))])
+form_16_agent = LlmAgent(
+    model=MODEL_NAME,
+    name="form_16_agent",
+    description="Extracts Data from a document",
+    instruction="""
+    You are customer service agent at a bank in India.
+    Your task is to extract the following fields from a form 16 income tax form:
+    1. First Name of Employee
+    2. Last Name of Employee
+    3. Address of Employee
+    4. Gross Salary of Employee
+    5. The Assessment year of the document
+    Here is the document:
+    """,
+    output_schema=doc_tools.TaxData,
+    disallow_transfer_to_parent=True,
+    disallow_transfer_to_peers=True
+)
 
 
-    response = asyncio.run(call_agent_and_print(
-        runner_instance=document_runner,
-        user_id=USER_ID,
-        session_id=SESSION_ID,
-        user_content=user_content)
-    )
+property_deed_agent = LlmAgent(
+    model=MODEL_NAME,
+    name="property_deed_agent",
+    description="Extracts Data from a document",
+    instruction="""
+    You are customer service agent at a bank in India.
+    Your task is to extract the following fields from a deed of sale concerning a property:
+    1. First Name of Buyer
+    2. Last Name of Buyer
+    3. Current Residential address of the buyer
+    4. The price of the property
+    5. The address of the property being sold
+    Here is the document:
+    """,
+    output_schema=doc_tools.PropertyData,
+    disallow_transfer_to_parent=True,
+    disallow_transfer_to_peers=True
+)
 
-    print(response)
-    
-    with open("./doc_agent/user_uploads/property_deed.pdf", "rb") as user_upload:
-        data = user_upload.read()
-    query='What is the name in the document?'
-    
-    user_content = types.Content(role='user', parts=[
-        types.Part(text=query),
-        types.Part(inline_data=types.Blob(
-            mime_type = "application/pdf",
-            data = data
-        ))])
+payslip_agent = LlmAgent(
+    model=MODEL_NAME,
+    name="payslip_agent",
+    description="Extracts Data from a document",
+    instruction="""
+    You are customer service agent at a bank in India.
+    Your task is to extract the following fields from a payslip for an employee:
+    1. First Name of Employee
+    2. Last Name of Employee
+    3. Address of Employee (use n.a. if the payslip does not contain address)
+    4. Total pay for the month
+    5. Date of the pay
+    Here is the document:
+    """,
+    output_schema=doc_tools.PaySlipData,
+    disallow_transfer_to_parent=True,
+    disallow_transfer_to_peers=True
+)
 
 
-    response = asyncio.run(call_agent_and_print(
-        runner_instance=document_runner,
-        user_id=USER_ID,
-        session_id=SESSION_ID,
-        user_content=user_content)
-    )
-    
-    print(response)
+
+document_identification_agent = LlmAgent(
+    model=MODEL_NAME,
+    name="document_agent",
+    description="Identifies the type of document",
+    instruction="""
+    You are customer service agent in a bank.
+    Your task is to identify if the document is one of the following:
+
+    1. Aadhar Card
+    2. Form 16
+    3. Salary Slip
+    4. Property Sale Deed
+    5. Bank Statement
+
+    If you're unable to identify the document, of if the document isn't one listed above reply with 'unknown_document'
+
+    """,
+    output_schema=doc_tools.DocumentType,
+    disallow_transfer_to_parent=True,
+    disallow_transfer_to_peers=True
+)
