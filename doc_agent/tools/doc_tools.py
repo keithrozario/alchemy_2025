@@ -44,3 +44,9 @@ class PaySlipData(BaseModel):
     total_salary: Decimal = Field(description="Total salary for the month in the payslip", decimal_places=2)
     date_of_pay: date = Field(description="The date of the pay in the payslip")
     document_type: AllowedDocuments
+
+class BankStatementData(BaseModel):
+    name: str = Field(description="The Name of the person in the bank statement")
+    start_date: date = Field(description="The start date of the bank statement")
+    end_date: date = Field(description="The end date of the bank statement")
+    document_type: AllowedDocuments

@@ -12,7 +12,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 from doc_agent.runners import SESSION_ID, USER_ID
-from doc_agent.runners import aadhar_runner, form_16_runner, property_deed_runner, payslip_runner, document_identification_runner
+import doc_agent.runners as runners
 
 
 os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = "TRUE"
@@ -50,11 +50,23 @@ async def process_file(file):
     config = {
         "aadhar_card": {
             "query": "What are the fields in the aadhar_card",
-            "runner": aadhar_runner,
+            "runner": runners.aadhar_runner,
         },
         "form_16": {
             "query": "What is the fields in the form 16 document?",
-            "runner": form_16_runner
+            "runner": runners.form_16_runner
+        },
+        "salary_slip": {
+            "query": "What is the fields in the Salary Slip?",
+            "runner": runners.payslip_runner
+        },
+        "property_sale_deed": {
+            "query": "What is the fields in the Property Sale Deed?",
+            "runner": runners.property_deed_runner
+        },
+        "bank_statement": {
+            "query": "What is the fields in the Bank Statement?",
+            "runner": runners.bank_statement_runner
         }
     }
 
@@ -62,7 +74,7 @@ async def process_file(file):
         query="What document is this?",
         doc_data=data,
         doc_mime_type=str(file.content_type),
-        runner_instance=document_identification_runner,
+        runner_instance=runners.document_identification_runner,
         user_id=USER_ID,
         session_id=SESSION_ID,
     )

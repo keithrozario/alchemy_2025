@@ -76,6 +76,22 @@ payslip_agent = LlmAgent(
     disallow_transfer_to_peers=True
 )
 
+bank_statement_agent = LlmAgent(
+    model=MODEL_NAME,
+    name="bank_statement_agent",
+    description="Extracts Data from a Bank Statement",
+    instruction="""
+    You are customer service agent at a bank in India.
+    Your task is to extract the following fields from a payslip for an employee:
+    1. Name in Bank Statement
+    2. Bank Statement Start Date
+    3. Bank Statement End date
+    Here is the document:
+    """,
+    output_schema=doc_tools.BankStatementData,
+    disallow_transfer_to_parent=True,
+    disallow_transfer_to_peers=True
+)
 
 
 document_identification_agent = LlmAgent(
