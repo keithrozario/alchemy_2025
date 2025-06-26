@@ -7,8 +7,8 @@ import json
 import os
 from pathlib import Path
 
-from helper.run_agent import run_query_with_file_data
-from doc_agent.agent import aadhar_agent, form_16_agent, property_deed_agent, payslip_agent, document_identification_agent
+from doc_agent.helper_functions import run_query_with_file_data
+from doc_agent.agents import aadhar_agent, form_16_agent, property_deed_agent, payslip_agent, document_identification_agent
 
 APP_NAME = "test_app"
 USER_ID = "test_user_456"

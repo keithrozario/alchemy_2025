@@ -20,12 +20,15 @@ os.environ['GOOGLE_CLOUD_PROJECT'] = "default-krozario"
 os.environ['GOOGLE_CLOUD_LOCATION'] = "us-central1"
 # os.environ["AGENT_ENGINE_ID"] = "1263761072779689984"
 
-
 @app.post("/submit")
 async def submit(
-    first_name: str = Form(...),
-    last_name: str = Form(...),
+    full_name: str = Form(...),
     address: str = Form(...),
+    aadhar_number: str = Form(...),
+    pan_number: str = Form(...),
+    loan_tenure: str = Form(...),
+    loan_amount: str = Form(...),
+    type_of_property: str = Form(...),
     files: List[UploadFile] = File(...),
 ):
 
@@ -35,7 +38,15 @@ async def submit(
         response[file.filename] = await process_file(file)
 
     return {
-        "form_data": {"first_name": first_name, "last_name": last_name, "address": address},
+        "form_data": {
+            "full_name" : full_name,
+            "aadhar_number": aadhar_number,
+            "pan_number": pan_number,
+            "loan_tenure": loan_tenure,
+            "loan_amount": loan_amount,
+            "type_of_property": type_of_property,
+            "address": address,
+        },
         "document_data": response
     }
 
@@ -67,6 +78,10 @@ async def process_file(file):
         "bank_statement": {
             "query": "What is the fields in the Bank Statement?",
             "runner": runners.bank_statement_runner
+        },
+        "pan_card": {
+            "query": "What is the fields in the PAN Card?",
+            "runner": runners.pan_card_runner
         }
     }
 

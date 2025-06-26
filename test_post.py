@@ -1,5 +1,5 @@
 import requests
-import os
+import json
 
 def submit_form_with_files():
     """
@@ -18,7 +18,7 @@ def submit_form_with_files():
     # --- 3. Prepare the files for upload ---
     # To send multiple files for a single form field, create a list of tuples.
     # Each tuple is in the format: ('field_name', (filename, file_object, content_type))
-    files = ["./user_uploads/Aadhar.png"]
+    files = ["./user_uploads/Pan.png"]
     files_to_upload = [
         ("files", (filename, open(filename, "rb"), "image/png"))
         for filename in files
@@ -31,7 +31,8 @@ def submit_form_with_files():
         response.raise_for_status()  # Raise an exception for bad status codes
 
         print("Request successful!")
-        print("Response JSON:", response.json())
+        pretty_json_string = json.dumps(response.json(), indent=4)
+        print(pretty_json_string)
 
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
