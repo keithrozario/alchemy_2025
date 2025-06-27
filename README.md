@@ -1,6 +1,6 @@
 # To Deploy
 
-gcloud run deploy alchemy-backend --source . \
+gcloud run deploy alchemy-backend-v2 --source . \
 --region us-central1 \
 --project default-krozario \
 --allow-unauthenticated \

@@ -8,11 +8,16 @@ def submit_form_with_files():
     """
 
     # --- 2. Define the endpoint URL and form data ---
+
     url = "http://127.0.0.1:8000/submit"
     form_data = {
-        "first_name": "Rahul",
-        "last_name": "Sharma",
-        "address": "1600 Pennslyvania Avenue",
+        "full_name": "John Doe",
+        "loan_type": "Personal Loan",
+        "aadhar_number": "123456789012",
+        "pan_number": "ABCDE1234F",
+        "loan_tenure": "12 months",
+        "loan_amount": "100000",
+        "type_of_property": "House",
     }
 
     # --- 3. Prepare the files for upload ---
