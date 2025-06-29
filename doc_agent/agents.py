@@ -1,15 +1,19 @@
-from google.adk.agents import LlmAgent
-from doc_agent.tools import doc_tools
-from pydantic import BaseModel, Field
 from decimal import Decimal
 
+from google.adk.agents import LlmAgent
+from pydantic import BaseModel, Field
+
+from doc_agent.tools import doc_tools
+
 MODEL_NAME = "gemini-2.0-flash"
+
 
 class AadharData(BaseModel):
     full_name: str = Field(description="The Full Name of the Person")
     date_of_birth: str = Field(description="The Date of Birth of the Person")
     aadhar_number: str = Field(description="The Aadhar card number of the Person")
     document_type: doc_tools.AllowedDocuments
+
 
 aadhar_agent = LlmAgent(
     model=MODEL_NAME,
@@ -25,16 +29,25 @@ aadhar_agent = LlmAgent(
     """,
     output_schema=AadharData,
     disallow_transfer_to_parent=True,
-    disallow_transfer_to_peers=True
+    disallow_transfer_to_peers=True,
 )
 
+
 class Form16Data(BaseModel):
-    annual_income_gross : Decimal = Field(description="The Gross annual income of the employee in the Form 16", decimal_places=2)
+    annual_income_gross: Decimal = Field(
+        description="The Gross annual income of the employee in the Form 16",
+        decimal_places=2,
+    )
     pan: str = Field(description="The permanent account number (PAN) of the employee")
     address: str = Field(description="The Address of the employee in the document")
-    assessment_years: str = Field(description="The Years of Assessment of the document in YYYY-YYYY format. e.g. 2025-2026")
-    total_tax: Decimal = Field(description="The total tax paid in the assesssment year", decimal_places=2)
+    assessment_years: str = Field(
+        description="The Years of Assessment of the document in YYYY-YYYY format. e.g. 2025-2026"
+    )
+    total_tax: Decimal = Field(
+        description="The total tax paid in the assesssment year", decimal_places=2
+    )
     document_type: doc_tools.AllowedDocuments
+
 
 form_16_agent = LlmAgent(
     model=MODEL_NAME,
@@ -53,16 +66,21 @@ form_16_agent = LlmAgent(
     """,
     output_schema=Form16Data,
     disallow_transfer_to_parent=True,
-    disallow_transfer_to_peers=True
+    disallow_transfer_to_peers=True,
 )
 
+
 class PropertyData(BaseModel):
-    buyer_name: str= Field(description="The Full Name of the buyer of the property")
+    buyer_name: str = Field(description="The Full Name of the buyer of the property")
     seller_name: str = Field(description="The Full Name of the seller of the property")
     buyer_pan: str = Field(description="The PAN of the buyer of the property")
     seller_pan: str | None = Field(description="The PAN of the seller of the property")
-    property_address: str = Field(description="The full address of the property being sold")
-    property_price: Decimal = Field(description="The price of the property in the document", decimal_places=2)
+    property_address: str = Field(
+        description="The full address of the property being sold"
+    )
+    property_price: Decimal = Field(
+        description="The price of the property in the document", decimal_places=2
+    )
 
 
 property_deed_agent = LlmAgent(
@@ -82,16 +100,22 @@ property_deed_agent = LlmAgent(
     """,
     output_schema=PropertyData,
     disallow_transfer_to_parent=True,
-    disallow_transfer_to_peers=True
+    disallow_transfer_to_peers=True,
 )
+
 
 class PaySlipData(BaseModel):
     full_name: str = Field(description="The Full Name of the employee in the document")
     employer_name: str = Field(description="The name of the Employer")
-    total_salary: Decimal = Field(description="Total salary for the month in the payslip", decimal_places=2)
-    salary_month: str = Field(description="The month of the salary in mm-yyyy format (e.g. 01-2023)")
+    total_salary: Decimal = Field(
+        description="Total salary for the month in the payslip", decimal_places=2
+    )
+    salary_month: str = Field(
+        description="The month of the salary in mm-yyyy format (e.g. 01-2023)"
+    )
     pan: str = Field(description="The PAN of the employee")
-    document_type: doc_tools.AllowedDocuments 
+    document_type: doc_tools.AllowedDocuments
+
 
 payslip_agent = LlmAgent(
     model=MODEL_NAME,
@@ -109,16 +133,26 @@ payslip_agent = LlmAgent(
     """,
     output_schema=PaySlipData,
     disallow_transfer_to_parent=True,
-    disallow_transfer_to_peers=True
+    disallow_transfer_to_peers=True,
 )
+
 
 class BankStatementData(BaseModel):
     name: str = Field(description="The Full Name of the person in the bank statement")
-    start_date: str = Field(description="The start date of the bank statement in dd-mm-YYYY format")
-    end_date: str = Field(description="The end date of the bank statement dd-mm-YYYY format")
-    opening_balance: Decimal = Field(description="The opening balance of the bank statement", decimal_places=2)
-    closing_balance: Decimal = Field(description="The closing balance of the bank statement", decimal_places=2)
+    start_date: str = Field(
+        description="The start date of the bank statement in dd-mm-YYYY format"
+    )
+    end_date: str = Field(
+        description="The end date of the bank statement dd-mm-YYYY format"
+    )
+    opening_balance: Decimal = Field(
+        description="The opening balance of the bank statement", decimal_places=2
+    )
+    closing_balance: Decimal = Field(
+        description="The closing balance of the bank statement", decimal_places=2
+    )
     document_type: doc_tools.AllowedDocuments
+
 
 bank_statement_agent = LlmAgent(
     model=MODEL_NAME,
@@ -136,7 +170,7 @@ bank_statement_agent = LlmAgent(
     """,
     output_schema=BankStatementData,
     disallow_transfer_to_parent=True,
-    disallow_transfer_to_peers=True
+    disallow_transfer_to_peers=True,
 )
 
 
@@ -144,6 +178,7 @@ class PanCardData(BaseModel):
     name: str = Field(description="The Full Name of the person on the PAN card")
     date_of_birth: str = Field(description="The Date of Birth on the PAN card")
     pan: str = Field(description="The PAN of the person")
+
 
 pan_card_agent = LlmAgent(
     model=MODEL_NAME,
@@ -159,7 +194,7 @@ pan_card_agent = LlmAgent(
     """,
     output_schema=PanCardData,
     disallow_transfer_to_parent=True,
-    disallow_transfer_to_peers=True
+    disallow_transfer_to_peers=True,
 )
 
 document_identification_agent = LlmAgent(
@@ -182,5 +217,5 @@ document_identification_agent = LlmAgent(
     """,
     output_schema=doc_tools.DocumentType,
     disallow_transfer_to_parent=True,
-    disallow_transfer_to_peers=True
+    disallow_transfer_to_peers=True,
 )

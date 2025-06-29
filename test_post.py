@@ -1,5 +1,7 @@
-import requests
 import json
+
+import requests
+
 
 def submit_form_with_files():
     """
@@ -27,8 +29,7 @@ def submit_form_with_files():
     # Each tuple is in the format: ('field_name', (filename, file_object, content_type))
     files = ["./user_uploads/Pan.png"]
     files_to_upload = [
-        ("files", (filename, open(filename, "rb"), "image/png"))
-        for filename in files
+        ("files", (filename, open(filename, "rb"), "image/png")) for filename in files
     ]
 
     print(f"Sending POST request to {url}...")
@@ -37,6 +38,5 @@ def submit_form_with_files():
     print(pretty_json_string)
 
 
-if __name__ == "__main__":                       
+if __name__ == "__main__":
     submit_form_with_files()
-

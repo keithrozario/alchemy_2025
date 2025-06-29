@@ -1,20 +1,15 @@
-from fastapi import (
-    Depends,
-    FastAPI,
-    File,
-    Form,
-    Request,
-    UploadFile,
-)
+import asyncio
+import os
 from typing import List
+
+from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
-import os
-from pydantic import BaseModel
-from backend_functions import process_file
 
-# Environment variables for local testing
+from backend_functions import process_file
+from loan_application import LoanApplicationForm, get_form_data
+
 os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = "TRUE"
 os.environ['GOOGLE_CLOUD_PROJECT'] = "default-krozario"
 os.environ['GOOGLE_CLOUD_LOCATION'] = "us-central1"
@@ -30,50 +25,32 @@ app.add_middleware(
 templates = Jinja2Templates(directory="templates")
 
 
-class LoanApplicationForm(BaseModel):
-    full_name: str
-    loan_type: str
-    aadhar_number: str
-    pan_number: str
-    loan_tenure: str
-    loan_amount: str
-    type_of_property: str
-
-
-def get_form_data(
-    full_name: str = Form(...),
-    loan_type: str = Form(...),
-    aadhar_number: str = Form(...),
-    pan_number: str = Form(...),
-    loan_tenure: str = Form(...),
-    loan_amount: str = Form(...),
-    type_of_property: str = Form(...),
-) -> LoanApplicationForm:
-    return LoanApplicationForm(
-        full_name=full_name,
-        loan_type=loan_type,
-        aadhar_number=aadhar_number,
-        pan_number=pan_number,
-        loan_tenure=loan_tenure,
-        loan_amount=loan_amount,
-        type_of_property=type_of_property,
-    )
-
-
 @app.post("/submit")
 async def submit(
     form_data: LoanApplicationForm = Depends(get_form_data),
     files: List[UploadFile] = File(...),
 ):
+    """
+    Accepts loan application form data and files, processes them concurrently,
+    and returns the extracted data.
+    """
+    tasks = [process_file(file) for file in files]
 
-    response = {}
+    results = await asyncio.gather(*tasks, return_exceptions=True)
 
-    for index, file in enumerate(files):
-        response[file.filename] = await process_file(file)
+    document_data = {}
+    for file, result in zip(files, results):
+        if isinstance(result, Exception):
+            print(f"Error processing file {file.filename}: {result}")
+            document_data[file.filename] = {
+                "error": f"Failed to process file: {file.filename}"
+            }
+        else:
+            document_data[file.filename] = result
 
     return {
         "form_data": form_data.model_dump(),
-        "document_data": response
+        "document_data": document_data,
     }
 
 

@@ -1,18 +1,19 @@
-from google.adk.runners import Runner
-from google.genai import types
 import asyncio
 from pathlib import Path
 
+from google.adk.runners import Runner
+from google.genai import types
+
+
 async def execute_user_query_async(
-    runner_instance: Runner,
-    user_id: str,
-    session_id: str,
-    user_content: types.Content
+    runner_instance: Runner, user_id: str, session_id: str, user_content: types.Content
 ):
     """Sends a query to the specified agent/runner and prints results."""
 
     final_response_content = "No final response received."
-    async for event in runner_instance.run_async(user_id=user_id, session_id=session_id, new_message=user_content):
+    async for event in runner_instance.run_async(
+        user_id=user_id, session_id=session_id, new_message=user_content
+    ):
         if event.is_final_response() and event.content and event.content.parts:
             # For output_schema, the content is the JSON string itself
             final_response_content = event.content.parts[0].text
@@ -21,15 +22,14 @@ async def execute_user_query_async(
 
 
 def execute_user_query(
-    runner_instance: Runner,
-    user_id: str,
-    session_id: str,
-    user_content: types.Content
+    runner_instance: Runner, user_id: str, session_id: str, user_content: types.Content
 ):
     """Sends a query to the specified agent/runner and prints results."""
 
     final_response_content = "No final response received."
-    for event in runner_instance.run(user_id=user_id, session_id=session_id, new_message=user_content):
+    for event in runner_instance.run(
+        user_id=user_id, session_id=session_id, new_message=user_content
+    ):
         if event.is_final_response() and event.content and event.content.parts:
             # For output_schema, the content is the JSON string itself
             final_response_content = event.content.parts[0].text
@@ -54,24 +54,24 @@ def run_query_with_file_data(
         runner_instance: The instance of an ADK runner to execute
         user_id: User ID
         session_id: Session ID
-    
+
     returns:
         The LLM response as a string
     """
 
-    user_content = types.Content(role='user', parts=[
-        types.Part(text=query),
-        types.Part(inline_data=types.Blob(
-            mime_type = doc_mime_type,
-            data = doc_data
-        ))])
-
+    user_content = types.Content(
+        role="user",
+        parts=[
+            types.Part(text=query),
+            types.Part(inline_data=types.Blob(mime_type=doc_mime_type, data=doc_data)),
+        ],
+    )
 
     response = execute_user_query(
         runner_instance=runner_instance,
         user_id=user_id,
         session_id=session_id,
-        user_content=user_content
+        user_content=user_content,
     )
 
     return str(response)
