@@ -5,7 +5,9 @@ gcloud run deploy alchemy-backend-v2 --source . \
 --project default-krozario \
 --allow-unauthenticated \
 --service-account adk-cloudrun@default-krozario.iam.gserviceaccount.com \
---min 1
+--min 1 \
+--memory 2Gi \
+--cpu 1
 
 # Sample Output
 

@@ -9,7 +9,9 @@ def submit_form_with_files():
 
     # --- 2. Define the endpoint URL and form data ---
 
-    url = "http://127.0.0.1:8000/submit"
+    url = "https://alchemy-backend-v2-209692124655.us-central1.run.app/submit"
+    url = "http://localhost:8000/submit"
+
     form_data = {
         "full_name": "John Doe",
         "loan_type": "Personal Loan",
@@ -29,25 +31,12 @@ def submit_form_with_files():
         for filename in files
     ]
 
-    try:
-        # --- 4. Send the POST request ---
-        print(f"Sending POST request to {url}...")
-        response = requests.post(url, data=form_data, files=files_to_upload)
-        response.raise_for_status()  # Raise an exception for bad status codes
+    print(f"Sending POST request to {url}...")
+    response = requests.post(url, data=form_data, files=files_to_upload)
+    pretty_json_string = json.dumps(response.json(), indent=4)
+    print(pretty_json_string)
 
-        print("Request successful!")
-        pretty_json_string = json.dumps(response.json(), indent=4)
-        print(pretty_json_string)
 
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
-
-    finally:
-        # --- 5. Clean up: close files and remove them ---
-        for _, file_tuple in files_to_upload:
-            file_tuple[1].close()
-        print("\nCleaned up dummy files.")
-
-if __name__ == "__main__":
+if __name__ == "__main__":                       
     submit_form_with_files()
 

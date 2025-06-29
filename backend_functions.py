@@ -3,9 +3,13 @@ from doc_agent.runners import SESSION_ID, USER_ID
 import doc_agent.runners as runners
 import json
 
+def write_to_bq(user_response: dict):
+    print("hello")
+
 
 async def process_file(file):
     data = await file.read()
+    await file.close()
 
     config = {
         "aadhar_card": {
@@ -42,9 +46,17 @@ async def process_file(file):
         user_id=USER_ID,
         session_id=SESSION_ID,
     )
-    doc_identity = json.loads(identification_response)
-    document_type = doc_identity['document_type']
-    
+    try:
+        doc_identity = json.loads(identification_response)
+        document_type = doc_identity['document_type']
+    except: # catch all exceptions for now
+        entry = {
+            "message": identification_response,
+            "severity": "ERROR",
+        }
+        print(json.dumps(entry))
+        return f"Error {identification_response}"
+
     doc_data_response = run_query_with_file_data(
         query=config[document_type]['query'],
         doc_data=data,
@@ -53,7 +65,5 @@ async def process_file(file):
         user_id=USER_ID,
         session_id=SESSION_ID,
     )
-
-    await file.close()
 
     return json.loads(doc_data_response)
