@@ -1,5 +1,8 @@
 # To Deploy
 
+# ensure you have an IAM role that can access whatever you need to access
+# A minimum of ai
+
 gcloud run deploy alchemy-backend-v2 --source . \
 --region us-central1 \
 --project default-krozario \

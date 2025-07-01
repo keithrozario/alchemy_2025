@@ -1,23 +1,13 @@
-import json
-import uuid
-
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 
 import doc_agent.agents as agents
-from doc_agent.helper_functions import run_query_with_file_data
 
 MODEL_NAME = "gemini-2.0-flash"
-APP_NAME = "alchemy_team_12"
-USER_ID = "test_user"
-SESSION_ID = uuid.uuid4().hex
+APP_NAME = "alchemy12"
 
-### Since all users are anonymous, we create a single session for use
-### Since we do not need to save the sessions, we use an InMemorySessionService
+# Creates one global session service for all runners
 session_service = InMemorySessionService()
-session_service.create_session(
-    app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
-)
 
 aadhar_runner = Runner(
     agent=agents.aadhar_agent,

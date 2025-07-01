@@ -16,8 +16,10 @@ ENV GOOGLE_CLOUD_LOCATION=us-central1
 
 COPY templates /app/templates/
 COPY doc_agent /app/doc_agent/
+COPY loan_application.py .
 COPY app.py .
 COPY backend_functions.py .
+
 USER myuser
 
 CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port $PORT"]
