@@ -37,6 +37,8 @@ def submit_form_with_files(env: str):
         url = "http://localhost:8000/submit"
     elif env == 'prod':
         url = "https://alchemy-backend-v2-209692124655.us-central1.run.app/submit"
+    elif env == 'prod_v3':
+        url = "https://alchemy-backend-v3-209692124655.us-central1.run.app/submit"
     else:
         url = "http://localhost:8000/submit"
     

@@ -1,6 +1,7 @@
 import asyncio
 import os
-from typing import List
+from typing import List 
+from dotenv import load_dotenv
 
 from fastapi import Depends, FastAPI, File, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,15 +9,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from backend_functions import process_file
-from loan_application import LoanApplicationForm, get_form_data
+from backend_functions import LoanApplicationForm, get_form_data
 
-os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = "TRUE"
-os.environ['GOOGLE_CLOUD_PROJECT'] = "default-krozario"
-os.environ['GOOGLE_CLOUD_LOCATION'] = "us-central1"
-# Reduces noisy print statements from these libraries
-os.environ["GRPC_VERBOSITY"] = "ERROR"
-os.environ["GLOG_minloglevel"] = "2"
-
+load_dotenv()
 
 # Imports the Cloud Logging client library and local
 import logging
@@ -51,9 +46,9 @@ async def submit(
     """
     logging.info("Loan Application Received", extra={"json_fields": form_data.model_dump()})
 
-    response = {}
-    for index, file in enumerate(files):
-        response[file.filename] = await process_file(file)
+    tasks = [process_file(file) for file in files]
+    results = await asyncio.gather(*tasks)    
+    response = {file.filename: result for file, result in zip(files, results)}
 
     logging.info("Loan Application Processed", extra={"json_fields": response})
     return {

@@ -4,6 +4,18 @@ import doc_agent.runners as runners
 from doc_agent.helper_functions import run_query_with_file_data
 from fastapi import UploadFile
 
+from fastapi import Form
+from pydantic import BaseModel
+
+class LoanApplicationForm(BaseModel):
+    full_name: str
+    loan_type: str
+    aadhar_number: str
+    pan_number: str
+    loan_tenure: str
+    loan_amount: str
+    type_of_property: str
+
 CONFIG = {
     "aadhar_card": {
         "query": "What are the fields in the Aadhar Card",
@@ -31,12 +43,38 @@ CONFIG = {
     },
 }
 
+def get_form_data(
+    full_name: str = Form(...),
+    loan_type: str = Form(...),
+    aadhar_number: str = Form(...),
+    pan_number: str = Form(...),
+    loan_tenure: str = Form(...),
+    loan_amount: str = Form(...),
+    type_of_property: str = Form(...),
+) -> LoanApplicationForm:
+    return LoanApplicationForm(
+        full_name=full_name,
+        loan_type=loan_type,
+        aadhar_number=aadhar_number,
+        pan_number=pan_number,
+        loan_tenure=loan_tenure,
+        loan_amount=loan_amount,
+        type_of_property=type_of_property,
+    )
 
-async def process_file(file: UploadFile):
+async def process_file(file: UploadFile)-> dict:
+    """
+    Processes a single file and extracts the data from it.
 
-    # Randomly generate a session & user for each invocation
-    # All runners share the same session_service, so the session ID is common
-    # between all runners
+
+    Args:
+        file: The File uploaded by user to be processed (singular file)
+    returns:
+        doc_data_response: The data extracted from the document, will be a different format depending on the document
+    """
+
+    # Randomly generate a session id & user id for each invocation
+    # All runners share the same session_service, so the session ID is common across all runners
     USER_ID = uuid.uuid4().hex
     SESSION_ID = uuid.uuid4().hex
 
