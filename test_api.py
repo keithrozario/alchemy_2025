@@ -2,6 +2,15 @@ import json
 import click
 import requests
 
+"""
+Run this file to test an api.
+Specify --env variable to use different environments.
+
+e.g. 
+python test_post.py --env local
+python test_post.py --env prod_pranshu
+
+"""
 
 
 def get_mime_type(file_path):
@@ -24,7 +33,7 @@ def get_mime_type(file_path):
 
 
 @click.command()
-@click.option('--env', default='local', type=str)
+@click.option("--env", default="local", type=str)
 def submit_form_with_files(env: str):
     """
     Test the API by submitting 6 documents from the user_upload folder
@@ -35,17 +44,16 @@ def submit_form_with_files(env: str):
         response (dict): Returns the response objects from the API calls
     """
 
-    if env == 'local':
+    if env == "local":
         url = "http://localhost:8000/submit"
-    elif env == 'prod':
+    elif env == "prod":
         url = "https://alchemy-backend-v2-209692124655.us-central1.run.app/submit"
-    elif env == 'prod_v3':
+    elif env == "prod_v3":
         url = "https://alchemy-backend-v3-209692124655.us-central1.run.app/submit"
-    elif env == 'prod_pranshu':
+    elif env == "prod_pranshu":
         url = "https://alchemy-backend-v3-941915649485.us-central1.run.app/submit"
     else:
         url = "http://localhost:8000/submit"
-    
 
     form_data = {
         "full_name": "John Doe",
@@ -66,22 +74,24 @@ def submit_form_with_files(env: str):
         "./user_uploads/form_16.pdf",
         "./user_uploads/property_deed.pdf",
         "./user_uploads/payslip.pdf",
-        ]
+    ]
     files_to_upload = [
-        ("files", (file_path, open(file_path, "rb"), get_mime_type(file_path))) for file_path in file_paths
+        ("files", (file_path, open(file_path, "rb"), get_mime_type(file_path)))
+        for file_path in file_paths
     ]
 
     headers = {}
     try:
-        with open("token.txt", 'r') as token_file:
+        with open("token.txt", "r") as token_file:
             token = token_file.read().strip()
             headers = {"Authorization": f"Bearer {token}"}
     except FileNotFoundError:
         print("no token file found, calling unauthenticated")
-    
 
     print(f"Sending POST request to {url}...")
-    response = requests.post(url, data=form_data, files=files_to_upload, headers=headers)
+    response = requests.post(
+        url, data=form_data, files=files_to_upload, headers=headers
+    )
     pretty_json_string = json.dumps(response.json(), indent=4)
     print(pretty_json_string)
 

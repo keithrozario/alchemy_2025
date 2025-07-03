@@ -11,6 +11,7 @@ from doc_agent.tools.doc_tools import AllowedDocuments
 from fastapi import Form
 from pydantic import BaseModel
 
+
 class LoanApplicationForm(BaseModel):
     full_name: str
     loan_type: str
@@ -19,6 +20,7 @@ class LoanApplicationForm(BaseModel):
     loan_tenure: str
     loan_amount: str
     type_of_property: str
+
 
 CONFIG = {
     "aadhar_card": {
@@ -47,6 +49,7 @@ CONFIG = {
     },
 }
 
+
 def get_form_data(
     full_name: str = Form(...),
     loan_type: str = Form(...),
@@ -66,7 +69,8 @@ def get_form_data(
         type_of_property=type_of_property,
     )
 
-async def process_file(file: UploadFile,  trxn_id: str)-> dict:
+
+async def process_file(file: UploadFile, trxn_id: str) -> dict:
     """
     Processes a single file and extracts the data from it.
 
@@ -83,9 +87,7 @@ async def process_file(file: UploadFile,  trxn_id: str)-> dict:
     SESSION_ID = uuid.uuid4().hex
 
     this_session = runners.session_service.create_session(
-        user_id=USER_ID, 
-        session_id=SESSION_ID, 
-        app_name=runners.APP_NAME
+        user_id=USER_ID, session_id=SESSION_ID, app_name=runners.APP_NAME
     )
 
     file_data_in_bytes = await file.read()
@@ -120,22 +122,23 @@ async def process_file(file: UploadFile,  trxn_id: str)-> dict:
 
     runners.session_service.close_session(session=this_session)
     runners.session_service.delete_session(
-        user_id=USER_ID, 
-        session_id=SESSION_ID,
-        app_name=runners.APP_NAME
+        user_id=USER_ID, session_id=SESSION_ID, app_name=runners.APP_NAME
     )
-    
+
     # save the file to GCS
     write_to_gcs(
-        blob_in_bytes = file_data_in_bytes, 
-        file_name = str(file.filename),
-        trxn_id =  trxn_id,
-        file_type = str(file.content_type)) # type: ignore
+        blob_in_bytes=file_data_in_bytes,
+        file_name=str(file.filename),
+        trxn_id=trxn_id,
+        file_type=str(file.content_type),
+    )  # type: ignore
 
     return json.loads(doc_data_response)
 
 
-def write_to_gcs(blob_in_bytes: bytes, file_name: str, trxn_id:str, file_type: str) -> str:
+def write_to_gcs(
+    blob_in_bytes: bytes, file_name: str, trxn_id: str, file_type: str
+) -> str:
     """
     Receives a file and saves it to a GCS bucket
 
@@ -154,6 +157,7 @@ def write_to_gcs(blob_in_bytes: bytes, file_name: str, trxn_id:str, file_type: s
 
     return f"gs://{bucket_name}/{blob.name}"
 
+
 def record_to_bq(full_response: dict):
     """
     Inserts a record into BQ for the application
@@ -169,34 +173,51 @@ def record_to_bq(full_response: dict):
 
     rows_to_insert = [
         {
-            "application_id": full_response['trxn_id'],
-            "FORM_fullName": full_response.get('form_data', {}).get('full_name', ''),
-            "FORM_loan_type": full_response.get('form_data', {}).get('loan_type', ''),
-            "FORM_aadhaar_number": full_response.get('form_data', {}).get('aadhar_number', ''),
-            "FORM_pan": full_response.get('form_data', {}).get('pan_number', ''),
-            "FORM_loan_tenure": full_response.get('form_data', {}).get('loan_tenure', ''),
-            "FORM_loan_amount": full_response.get('form_data', {}).get('loan_amount', ''),
-            "FORM_property_type": full_response.get('form_data', {}).get('type_of_property', ''),
+            "application_id": full_response["trxn_id"],
+            "FORM_fullName": full_response.get("form_data", {}).get("full_name", ""),
+            "FORM_loan_type": full_response.get("form_data", {}).get("loan_type", ""),
+            "FORM_aadhaar_number": full_response.get("form_data", {}).get(
+                "aadhar_number", ""
+            ),
+            "FORM_pan": full_response.get("form_data", {}).get("pan_number", ""),
+            "FORM_loan_tenure": full_response.get("form_data", {}).get(
+                "loan_tenure", ""
+            ),
+            "FORM_loan_amount": full_response.get("form_data", {}).get(
+                "loan_amount", ""
+            ),
+            "FORM_property_type": full_response.get("form_data", {}).get(
+                "type_of_property", ""
+            ),
         }
     ]
     try:
-        errors = client.insert_rows_json(table_id, rows_to_insert)  # Make an API request.
+        errors = client.insert_rows_json(
+            table_id, rows_to_insert
+        )  # Make an API request.
     except:
         return False
-    
+
     return True
 
-def  validate_response(document_data: dict)-> tuple[str, list]:
+
+def validate_response(document_data: dict) -> tuple[str, list]:
     """
     Checks if at least one of each document type is in the response
     """
 
-    all_doc_types = {member.value for member in AllowedDocuments if member != AllowedDocuments.UNKNOWN_DOCUMENT}
+    all_doc_types = {
+        member.value
+        for member in AllowedDocuments
+        if member != AllowedDocuments.UNKNOWN_DOCUMENT
+    }
     document_types_uploaded_list = [
-        doc.get("document_type") for doc in document_data.values() if doc.get("document_type")
+        doc.get("document_type")
+        for doc in document_data.values()
+        if doc.get("document_type")
     ]
     missing_docs = all_doc_types.difference(set(document_types_uploaded_list))
-    
+
     if missing_docs:
         status = "ERROR"
         messages = [f"Missing documents: {missing_docs}"]
