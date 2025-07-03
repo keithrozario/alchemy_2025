@@ -1,5 +1,7 @@
 import asyncio
 import os
+import uuid
+import json
 from typing import List 
 from dotenv import load_dotenv
 
@@ -8,8 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from backend_functions import process_file
-from backend_functions import LoanApplicationForm, get_form_data
+from backend_functions import process_file, write_to_gcs, LoanApplicationForm, get_form_data, validate_response
 
 load_dotenv()
 
@@ -44,19 +45,32 @@ async def submit(
     Accepts loan application form data and files, processes them concurrently,
     and returns the extracted data.
     """
-    logging.info("Loan Application Received", extra={"json_fields": form_data.model_dump()})
+    
+    trxn_id = uuid.uuid4().hex # generates random transaction id
+    logging.info(f"Loan Application Received {trxn_id}", extra={"json_fields": form_data.model_dump()})
 
-    tasks = [process_file(file) for file in files]
+    tasks = [process_file(file, trxn_id) for file in files]
     results = await asyncio.gather(*tasks)    
     response = {file.filename: result for file, result in zip(files, results)}
 
-    logging.info("Loan Application Processed", extra={"json_fields": response})
-    return {
+    status, messages = validate_response(response)
+
+    logging.info(f"Loan Application Processed {trxn_id}", extra={"json_fields": response})
+    user_response = {
         "form_data": form_data.model_dump(),
         "document_data": response,
-        "status": "SUCCESS",
-        "message": "Form submitted successfully"
-    }
+        "status": status,
+        "messages": messages,
+        "trxn_id": trxn_id,
+        "preliminary_assessment": "Some string for now!"
+        }
+    write_to_gcs(
+        blob_in_bytes=json.dumps(user_response, indent=4).encode('utf-8'), 
+        file_name=f"{trxn_id}.json",
+        trxn_id=trxn_id,
+        file_type="application/json"
+    )
+    return user_response
 
 
 @app.get("/", response_class=HTMLResponse)

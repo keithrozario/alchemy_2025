@@ -81,6 +81,7 @@ class PropertyData(BaseModel):
     property_price: Decimal = Field(
         description="The price of the property in the document", decimal_places=2
     )
+    document_type: doc_tools.AllowedDocuments
 
 
 property_deed_agent = LlmAgent(
@@ -178,6 +179,7 @@ class PanCardData(BaseModel):
     name: str = Field(description="The Full Name of the person on the PAN card")
     date_of_birth: str = Field(description="The Date of Birth on the PAN card")
     pan: str = Field(description="The PAN of the person")
+    document_type: doc_tools.AllowedDocuments
 
 
 pan_card_agent = LlmAgent(

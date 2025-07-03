@@ -2,6 +2,8 @@ import json
 import click
 import requests
 
+
+
 def get_mime_type(file_path):
     """
     Args:
@@ -39,6 +41,8 @@ def submit_form_with_files(env: str):
         url = "https://alchemy-backend-v2-209692124655.us-central1.run.app/submit"
     elif env == 'prod_v3':
         url = "https://alchemy-backend-v3-209692124655.us-central1.run.app/submit"
+    elif env == 'prod_pranshu':
+        url = "https://alchemy-backend-v3-941915649485.us-central1.run.app/submit"
     else:
         url = "http://localhost:8000/submit"
     
@@ -67,8 +71,17 @@ def submit_form_with_files(env: str):
         ("files", (file_path, open(file_path, "rb"), get_mime_type(file_path))) for file_path in file_paths
     ]
 
+    headers = {}
+    try:
+        with open("token.txt", 'r') as token_file:
+            token = token_file.read().strip()
+            headers = {"Authorization": f"Bearer {token}"}
+    except FileNotFoundError:
+        print("no token file found, calling unauthenticated")
+    
+
     print(f"Sending POST request to {url}...")
-    response = requests.post(url, data=form_data, files=files_to_upload)
+    response = requests.post(url, data=form_data, files=files_to_upload, headers=headers)
     pretty_json_string = json.dumps(response.json(), indent=4)
     print(pretty_json_string)
 

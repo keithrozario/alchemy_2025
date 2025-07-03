@@ -3,11 +3,30 @@
 # ensure you have an IAM role that can access whatever you need to access
 # A minimum of ai
 
-gcloud run deploy alchemy-backend-v2 --source . \
+export PROJECT_ID="project-alchemy-team12"
+gcloud config set project $PROJECT_ID
+
+gcloud iam service-accounts create "web-backend-sa" \
+  --description="Web Backend Service Account" \
+  --display-name="Web Backend"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+--member serviceAccount:web-backend-sa@$PROJECT_ID.iam.gserviceaccount.com \
+--role=roles/run.invoker
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+--member serviceAccount:web-backend-sa@$PROJECT_ID.iam.gserviceaccount.com \
+--role=roles/storage.objectCreator
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+--member serviceAccount:web-backend-sa@$PROJECT_ID.iam.gserviceaccount.com \
+--role=roles/aiplatform.user
+
+gcloud run deploy alchemy-backend-v3 --source . \
 --region us-central1 \
---project default-krozario \
+--project $PROJECT_ID \
 --allow-unauthenticated \
---service-account adk-cloudrun@default-krozario.iam.gserviceaccount.com \
+--service-account web-backend-sa@$PROJECT_ID.iam.gserviceaccount.com  \
 --min 1 \
 --memory 2Gi \
 --cpu 1

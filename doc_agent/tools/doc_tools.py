@@ -1,9 +1,5 @@
-from datetime import date
-from decimal import Decimal
 from enum import Enum
-from typing import Annotated, Any, List
-
-from pydantic import BaseModel, BeforeValidator, Field
+from pydantic import BaseModel
 
 
 class AllowedDocuments(str, Enum):
