@@ -1,6 +1,49 @@
-# To Deploy
+# To run locally
 
-    export PROJECT_ID="project-alchemy-team12"
+As a prerequsite, set your environment variables (or `.env` file) to something like below:
+
+    GOOGLE_GENAI_USE_VERTEXAI=TRUE
+    GOOGLE_CLOUD_PROJECT=project-alchemy-team12
+    GOOGLE_CLOUD_LOCATION=us-central1
+    LOAN_GCS_BUCKET=alchemy-loan-documents-uploads
+    BQ_TABLE=project-alchemy-team12.project_alchemy_loan_db.hdfc_loan_agent_table
+    GRPC_VERBOSITY=ERROR
+    GLOG_minloglevel=2
+
+You will need to have a deployed a BigQuery Table and GCS Bucket in your environment separately.
+
+Then run:
+
+    $ uv venv
+    $ source .venv/bin/activate
+    $ uv sync --locked
+    $ uv run uvicorn app:app --reload
+
+Alternatively, if you do not have UV installed (you really should!), you can use the requirements.txt file instead
+
+    $ python3 -m venv venv/
+    $ source venv/bin/activate
+    $ pip install -r requirements.txt
+    $ uvicorn app:app --reload
+
+# To test the API locally
+
+The following script will test the api locally
+
+    $ python3 test_api.py --env local
+
+To test against the api deployed (change the prod_url value in `test_api.py`) then run:
+
+    $ python3 test_api.py --env prod
+
+If the API is `authenticated` then run the following:
+
+    $ gcloud auth print-identity-token > token.txt
+    $ python3 test_api.py --env prod
+
+# To Deploy to Cloud Run
+
+    export PROJECT_ID="project-alchemy-team12" # change this
     gcloud config set project $PROJECT_ID
 
     gcloud iam service-accounts create "web-backend-sa" \
@@ -19,6 +62,10 @@
     --member serviceAccount:web-backend-sa@$PROJECT_ID.iam.gserviceaccount.com \
     --role=roles/aiplatform.user
 
+    gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member serviceAccount:web-backend-sa@$PROJECT_ID.iam.gserviceaccount.com \
+    --role=roles/bigquery.dataEditor
+
     gcloud run deploy alchemy-backend-v3 --source . \
     --region us-central1 \
     --project $PROJECT_ID \
@@ -26,11 +73,12 @@
     --service-account web-backend-sa@$PROJECT_ID.iam.gserviceaccount.com  \
     --min 1 \
     --memory 2Gi \
-    --cpu 1
+    --cpu 1 \
+    --set-env-vars GOOGLE_CLOUD_PROJECT=project-alchemy-team12,LOAN_GCS_BUCKET=alchemy-loan-documents-uploads,BQ_TABLE=project-alchemy-team12.project_alchemy_loan_db.hdfc_loan_agent_table
 
 # Sample Output
 
-If you submit the samples, you'll get the following:
+If you run `test_api.py` it will submit 6 sample files and you'll get the following output:
 
 ```json
 {
@@ -99,27 +147,5 @@ If you submit the samples, you'll get the following:
 }
 ```
 
-# To run locally
 
-As a prerequsite, set your environment variables (or .env file) to something like below:
-
-  GOOGLE_GENAI_USE_VERTEXAI=TRUE
-  GOOGLE_CLOUD_PROJECT=project-alchemy-team12
-  GOOGLE_CLOUD_LOCATION=us-central1
-  LOAN_GCS_BUCKET=alchemy-loan-documents-uploads
-  GRPC_VERBOSITY=ERROR
-  GLOG_minloglevel=2
-
-Then run:
-
-    $ uv venv
-    $ source .venv/bin/activate
-    $ uv sync --locked
-    $ uv run uvicorn app:app --reload
-
-# To test the API locally
-
-The following script will test the api locally
-
-    $ python3 test_api.py --env local
 

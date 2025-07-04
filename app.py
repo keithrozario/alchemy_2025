@@ -50,16 +50,17 @@ async def submit(
     files: List[UploadFile] = File(...),
 ):
     """
-    Accepts loan application form data and files, processes them concurrently,
-    and returns the extracted data.
+    Accepts loan application form data and files, processes them asynchronously.
+    Returns the extracted data.
     """
 
-    trxn_id = uuid.uuid4().hex  # generates random transaction id
+    trxn_id = uuid.uuid4().hex
     logging.info(
         f"Loan Application Received {trxn_id}",
         extra={"json_fields": form_data.model_dump()},
     )
 
+    # Process each file asynchronously
     tasks = [process_file(file, trxn_id) for file in files]
     results = await asyncio.gather(*tasks)
     response = {file.filename: result for file, result in zip(files, results)}

@@ -169,7 +169,7 @@ def record_to_bq(full_response: dict):
     """
 
     client = bigquery.Client()
-    table_id = "project-alchemy-team12.project_alchemy_loan_db.hdfc_loan_agent_table"
+    table_id = os.environ["BQ_TABLE"]
 
     rows_to_insert = [
         {

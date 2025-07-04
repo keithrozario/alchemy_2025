@@ -73,7 +73,7 @@ def submit_form_with_files(env: str):
         "./user_uploads/Aadhar.png",
         "./user_uploads/form_16.pdf",
         "./user_uploads/property_deed.pdf",
-        "./user_uploads/payslip.pdf",
+        # "./user_uploads/payslip.pdf",
     ]
     files_to_upload = [
         ("files", (file_path, open(file_path, "rb"), get_mime_type(file_path)))
@@ -92,8 +92,12 @@ def submit_form_with_files(env: str):
     response = requests.post(
         url, data=form_data, files=files_to_upload, headers=headers
     )
-    pretty_json_string = json.dumps(response.json(), indent=4)
-    print(pretty_json_string)
+    try:
+        pretty_json_string = json.dumps(response.json(), indent=4)
+        print(pretty_json_string)
+    except json.JSONDecodeError:  # usually some error that we should print to the user
+        print(response.text)
+
 
 
 if __name__ == "__main__":
