@@ -41,7 +41,7 @@ def submit_form_with_files(env: str):
     Args:
         env: specifies the environment, local for localhost, else will submit to the webpage.
     returns:
-        response (dict): Returns the response objects from the API calls
+        None: prints output to stdio
     """
 
     if env == "local":
@@ -73,7 +73,7 @@ def submit_form_with_files(env: str):
         "./user_uploads/Aadhar.png",
         "./user_uploads/form_16.pdf",
         "./user_uploads/property_deed.pdf",
-        # "./user_uploads/payslip.pdf",
+        "./user_uploads/payslip.pdf",
     ]
     files_to_upload = [
         ("files", (file_path, open(file_path, "rb"), get_mime_type(file_path)))

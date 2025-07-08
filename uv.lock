@@ -26,7 +26,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "deprecated", specifier = ">=1.2.18" },
-    { name = "google-adk", specifier = "==0.4.0" },
+    { name = "google-adk", specifier = ">=0.4.0" },
     { name = "google-cloud-logging", specifier = ">=3.12.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
 ]
@@ -204,6 +204,15 @@ wheels = [
 ]
 
 [[package]]
+name = "cloudpickle"
+version = "3.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/52/39/069100b84d7418bc358d81669d5748efb14b9cceacd2f9c75f550424132f/cloudpickle-3.1.1.tar.gz", hash = "sha256:b216fa8ae4019d5482a8ac3c95d8f6346115d8835911fd4aefd1a445e4242c64", size = 22113, upload_time = "2025-01-14T17:02:05.085Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7e/e8/64c37fadfc2816a7701fa8a6ed8d87327c7d54eacfbfb6edab14a2f2be75/cloudpickle-3.1.1-py3-none-any.whl", hash = "sha256:c8c5a44295039331ee9dad40ba100a9c7297b6f988e50e87ccdf3765a668350e", size = 20992, upload_time = "2025-01-14T17:02:02.417Z" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -270,28 +279,29 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.115.14"
+version = "0.116.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "starlette" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ca/53/8c38a874844a8b0fa10dd8adf3836ac154082cf88d3f22b544e9ceea0a15/fastapi-0.115.14.tar.gz", hash = "sha256:b1de15cdc1c499a4da47914db35d0e4ef8f1ce62b624e94e0e5824421df99739", size = 296263, upload_time = "2025-06-26T15:29:08.21Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/20/38/e1da78736143fd885c36213a3ccc493c384ae8fea6a0f0bc272ef42ebea8/fastapi-0.116.0.tar.gz", hash = "sha256:80dc0794627af0390353a6d1171618276616310d37d24faba6648398e57d687a", size = 296518, upload_time = "2025-07-07T15:09:27.82Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/53/50/b1222562c6d270fea83e9c9075b8e8600b8479150a18e4516a6138b980d1/fastapi-0.115.14-py3-none-any.whl", hash = "sha256:6c0c8bf9420bd58f565e585036d971872472b4f7d3f6c73b698e10cffdefb3ca", size = 95514, upload_time = "2025-06-26T15:29:06.49Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/68/d80347fe2360445b5f58cf290e588a4729746e7501080947e6cdae114b1f/fastapi-0.116.0-py3-none-any.whl", hash = "sha256:fdcc9ed272eaef038952923bef2b735c02372402d1203ee1210af4eea7a78d2b", size = 95625, upload_time = "2025-07-07T15:09:26.348Z" },
 ]
 
 [[package]]
 name = "google-adk"
-version = "0.4.0"
+version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "anyio" },
     { name = "authlib" },
     { name = "click" },
     { name = "fastapi" },
     { name = "google-api-python-client" },
-    { name = "google-cloud-aiplatform" },
+    { name = "google-cloud-aiplatform", extra = ["agent-engines"] },
     { name = "google-cloud-secret-manager" },
     { name = "google-cloud-speech" },
     { name = "google-cloud-storage" },
@@ -302,15 +312,20 @@ dependencies = [
     { name = "opentelemetry-exporter-gcp-trace" },
     { name = "opentelemetry-sdk" },
     { name = "pydantic" },
+    { name = "python-dateutil" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
+    { name = "requests" },
     { name = "sqlalchemy" },
+    { name = "starlette" },
+    { name = "typing-extensions" },
     { name = "tzlocal" },
     { name = "uvicorn" },
+    { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/d5/69185bb36fdce0c952101409c548ee9d258d7b014fd0b1d3650020adf158/google_adk-0.4.0.tar.gz", hash = "sha256:c134528dd45fd67b2b49ea550c135feef6758c29a9405983edec64ec72b1dd62", size = 1054057, upload_time = "2025-05-02T20:23:28.889Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/d1/cd61316e871b53d0fb0cfc4418bc6f24ed5da54dd17a8c0b9eef9662123f/google_adk-1.5.0.tar.gz", hash = "sha256:917770107963714362b8925acf39d01a6d84701ba7c30d0f4f19a47296b6faab", size = 1158395, upload_time = "2025-06-25T21:11:57.761Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/65/d9/cb41ace4db03d4d48f14443fde104ac1c7513b9351ba6618233223e3085f/google_adk-0.4.0-py3-none-any.whl", hash = "sha256:5edaf3049d98fbdafff5ccc48855a75d83ffe3c7644a865696364ecba18e97fd", size = 1175901, upload_time = "2025-05-02T20:23:27.042Z" },
+    { url = "https://files.pythonhosted.org/packages/2c/0d/06399277f6e5b60b74328228c82909a0f866e2f839675b8310855aa43921/google_adk-1.5.0-py3-none-any.whl", hash = "sha256:f2ce47fa9a56097664d1c7499c867954326ca80fe891421c4c72ee3a70e19e55", size = 1330171, upload_time = "2025-06-25T21:11:55.882Z" },
 ]
 
 [[package]]
@@ -337,7 +352,7 @@ grpc = [
 
 [[package]]
 name = "google-api-python-client"
-version = "2.174.0"
+version = "2.175.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-api-core" },
@@ -346,9 +361,9 @@ dependencies = [
     { name = "httplib2" },
     { name = "uritemplate" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1a/fd/860fef0cf3edbad828e2ab4d2ddee5dfe8e595b6da748ac6c77e95bc7bef/google_api_python_client-2.174.0.tar.gz", hash = "sha256:9eb7616a820b38a9c12c5486f9b9055385c7feb18b20cbafc5c5a688b14f3515", size = 13127872, upload_time = "2025-06-25T19:27:12.977Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/41/14/ecabbf7376afe500282ba83fc0015d4bc33a00fd73d189ca66437d17acae/google_api_python_client-2.175.0.tar.gz", hash = "sha256:f6d5b5c0141194a72cebef33feb1377fa668b3f14dc90a2fae258dbbbdcdb30c", size = 13143355, upload_time = "2025-07-04T01:02:28.364Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/2d/4250b81e8f5309b58650660f403584db6f64067acac74475893a8f33348d/google_api_python_client-2.174.0-py3-none-any.whl", hash = "sha256:f695205ceec97bfaa1590a14282559c4109326c473b07352233a3584cdbf4b89", size = 13650466, upload_time = "2025-06-25T19:27:10.426Z" },
+    { url = "https://files.pythonhosted.org/packages/f8/b8/2800f1aee399ea325fa675244de5178ab938485506ded2d17acf73e23cdb/google_api_python_client-2.175.0-py3-none-any.whl", hash = "sha256:5f4313a914d11d2b0840d1daa336caef3f53e28e8234077c139f7b236fba9622", size = 13667772, upload_time = "2025-07-04T01:02:25.764Z" },
 ]
 
 [[package]]
@@ -400,6 +415,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/7c/fc/c801934d177f7eac3f3d0eadac21232a4700477bf50b4ab3c9e39c29a919/google_cloud_aiplatform-1.101.0.tar.gz", hash = "sha256:03e18763525526e165a674113840f6c048b0e4d289a6b5a05118964f41e1a579", size = 9439723, upload_time = "2025-07-01T23:11:37.024Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1f/e9/ce1e48bdc01c22929cb7672579106f013338cc8f535c57fff240ce869047/google_cloud_aiplatform-1.101.0-py2.py3-none-any.whl", hash = "sha256:677f55317d473eaa7a469d333144c73425b1dd15308981adcf62212f18f7b52a", size = 7850411, upload_time = "2025-07-01T23:11:34.264Z" },
+]
+
+[package.optional-dependencies]
+agent-engines = [
+    { name = "cloudpickle" },
+    { name = "google-cloud-logging" },
+    { name = "google-cloud-trace" },
+    { name = "opentelemetry-exporter-gcp-trace" },
+    { name = "opentelemetry-sdk" },
+    { name = "packaging" },
+    { name = "pydantic" },
+    { name = "typing-extensions" },
 ]
 
 [[package]]
@@ -1452,14 +1479,14 @@ wheels = [
 
 [[package]]
 name = "sse-starlette"
-version = "2.3.6"
+version = "2.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8c/f4/989bc70cb8091eda43a9034ef969b25145291f3601703b82766e5172dfed/sse_starlette-2.3.6.tar.gz", hash = "sha256:0382336f7d4ec30160cf9ca0518962905e1b69b72d6c1c995131e0a703b436e3", size = 18284, upload_time = "2025-05-30T13:34:12.914Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/07/3e/eae74d8d33e3262bae0a7e023bb43d8bdd27980aa3557333f4632611151f/sse_starlette-2.4.1.tar.gz", hash = "sha256:7c8a800a1ca343e9165fc06bbda45c78e4c6166320707ae30b416c42da070926", size = 18635, upload_time = "2025-07-06T09:41:33.631Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/81/05/78850ac6e79af5b9508f8841b0f26aa9fd329a1ba00bf65453c2d312bcc8/sse_starlette-2.3.6-py3-none-any.whl", hash = "sha256:d49a8285b182f6e2228e2609c350398b2ca2c36216c2675d875f81e93548f760", size = 10606, upload_time = "2025-05-30T13:34:11.703Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/f1/6c7eaa8187ba789a6dd6d74430307478d2a91c23a5452ab339b6fbe15a08/sse_starlette-2.4.1-py3-none-any.whl", hash = "sha256:08b77ea898ab1a13a428b2b6f73cfe6d0e607a7b4e15b9bb23e4a37b087fd39a", size = 10824, upload_time = "2025-07-06T09:41:32.321Z" },
 ]
 
 [[package]]
@@ -1485,11 +1512,11 @@ wheels = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.14.0"
+version = "4.14.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d1/bc/51647cd02527e87d05cb083ccc402f93e441606ff1f01739a62c8ad09ba5/typing_extensions-4.14.0.tar.gz", hash = "sha256:8676b788e32f02ab42d9e7c61324048ae4c6d844a399eebace3d4979d75ceef4", size = 107423, upload_time = "2025-06-02T14:52:11.399Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/98/5a/da40306b885cc8c09109dc2e1abd358d5684b1425678151cdaed4731c822/typing_extensions-4.14.1.tar.gz", hash = "sha256:38b39f4aeeab64884ce9f74c94263ef78f3c22467c8724005483154c26648d36", size = 107673, upload_time = "2025-07-04T13:28:34.16Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/69/e0/552843e0d356fbb5256d21449fa957fa4eff3bbc135a74a691ee70c7c5da/typing_extensions-4.14.0-py3-none-any.whl", hash = "sha256:a1514509136dd0b477638fc68d6a91497af5076466ad0fa6c338e44e359944af", size = 43839, upload_time = "2025-06-02T14:52:10.026Z" },
+    { url = "https://files.pythonhosted.org/packages/b5/00/d631e67a838026495268c2f6884f3711a15a9a2a96cd244fdaea53b823fb/typing_extensions-4.14.1-py3-none-any.whl", hash = "sha256:d1e1e3b58374dc93031d6eda2420a48ea44a36c2b4766a4fdeb3710755731d76", size = 43906, upload_time = "2025-07-04T13:28:32.743Z" },
 ]
 
 [[package]]

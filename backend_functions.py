@@ -86,7 +86,7 @@ async def process_file(file: UploadFile, trxn_id: str) -> dict:
     USER_ID = trxn_id
     SESSION_ID = uuid.uuid4().hex
 
-    this_session = runners.session_service.create_session(
+    await runners.session_service.create_session(
         user_id=USER_ID, session_id=SESSION_ID, app_name=runners.APP_NAME
     )
 
@@ -120,8 +120,7 @@ async def process_file(file: UploadFile, trxn_id: str) -> dict:
         session_id=SESSION_ID,
     )
 
-    runners.session_service.close_session(session=this_session)
-    runners.session_service.delete_session(
+    await runners.session_service.delete_session(
         user_id=USER_ID, session_id=SESSION_ID, app_name=runners.APP_NAME
     )
 
@@ -131,7 +130,7 @@ async def process_file(file: UploadFile, trxn_id: str) -> dict:
         file_name=str(file.filename),
         trxn_id=trxn_id,
         file_type=str(file.content_type),
-    )  # type: ignore
+    )
 
     return json.loads(doc_data_response)
 
