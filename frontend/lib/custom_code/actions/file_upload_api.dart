@@ -22,7 +22,7 @@ Future<dynamic> fileUploadApi(
   String? typeofproperty,
 ) async {
   final uri = Uri.parse(
-      'https://alchemy-backend-v2-209692124655.us-central1.run.app/submit');
+      '/submit');
 
   final selectedFiles = fileUploadService.selectedFiles;
   final fileBytesList = fileUploadService.fileBytesList;

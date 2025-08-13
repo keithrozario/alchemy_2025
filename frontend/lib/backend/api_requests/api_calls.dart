@@ -25,7 +25,7 @@ class LoanAPICall {
     return ApiManager.instance.makeApiCall(
       callName: 'loanAPI',
       apiUrl:
-          'https://alchemy-backend-v2-209692124655.us-central1.run.app/submit',
+          '/submit',
       callType: ApiCallType.POST,
       headers: {},
       params: {

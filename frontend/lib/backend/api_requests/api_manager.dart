@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
@@ -495,7 +496,9 @@ class ApiManager {
     if (_accessToken != null) {
       headers[HttpHeaders.authorizationHeader] = 'Bearer $_accessToken';
     }
-    if (!apiUrl.startsWith('http')) {
+    if (kIsWeb && apiUrl.startsWith('/')) {
+      apiUrl = Uri.base.resolve(apiUrl).toString();
+    } else if (!apiUrl.startsWith('http')) {
       apiUrl = 'https://$apiUrl';
     }
 
