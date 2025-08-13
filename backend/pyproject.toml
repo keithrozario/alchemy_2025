@@ -5,6 +5,7 @@ description = "Loan Application Project with Alchemy"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "click>=8.2.1",
     "deprecated>=1.2.18",
     "google-adk>=0.4.0",
     "google-cloud-logging>=3.12.1",

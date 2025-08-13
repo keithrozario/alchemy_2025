@@ -9,6 +9,7 @@ from fastapi import Depends, FastAPI, File, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 from backend_functions import (
     process_file,
@@ -87,7 +88,9 @@ async def submit(
     return user_response
 
 
-@app.get("/", response_class=HTMLResponse)
-async def main(request: Request):
-    logging.info("Web Request Received", extra={"json_fields": request})
-    return templates.TemplateResponse("index.html", {"request": request})
+# @app.get("/", response_class=HTMLResponse)
+# async def main(request: Request):
+#    logging.info("Web Request Received", extra={"json_fields": request})
+#    return templates.TemplateResponse("index.html", {"request": request})
+
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
