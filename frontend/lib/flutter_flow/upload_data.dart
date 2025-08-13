@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:video_player/video_player.dart';
 
-import '../auth/firebase_auth/auth_util.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow_util.dart';
 
@@ -380,4 +379,4 @@ String? _removeTrailingSlash(String? path) => path != null && path.endsWith('/')
     ? path.substring(0, path.length - 1)
     : path;
 
-String _firebasePathPrefix() => 'users/$currentUserUid/uploads';
+String _firebasePathPrefix() => 'users/default_user/uploads';
