@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from starlette.responses import RedirectResponse
 
 from backend_functions import (
     process_file,
@@ -88,9 +89,20 @@ async def submit(
     return user_response
 
 
-# @app.get("/", response_class=HTMLResponse)
-# async def main(request: Request):
-#    logging.info("Web Request Received", extra={"json_fields": request})
-#    return templates.TemplateResponse("index.html", {"request": request})
+@app.get("/testui", response_class=HTMLResponse)
+async def main(request: Request):
+    """
+    A testui without fancy javascript, purely for test purposes.
+    """
+    logging.info("Web Request Received", extra={"json_fields": request})
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/")
+async def root():
+    """
+    The UI only works on /index.html, so I did a hacky redirection here.
+    """
+    return RedirectResponse(url="/index.html")
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")

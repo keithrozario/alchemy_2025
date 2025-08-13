@@ -6,7 +6,6 @@ As a prerequsite, set your environment variables (or `.env` file) to something l
     GOOGLE_CLOUD_PROJECT=project-alchemy-team12
     GOOGLE_CLOUD_LOCATION=us-central1
     LOAN_GCS_BUCKET=alchemy-loan-documents-uploads
-    BQ_TABLE=project-alchemy-team12.project_alchemy_loan_db.hdfc_loan_agent_table
     GRPC_VERBOSITY=ERROR
     GLOG_minloglevel=2
 
