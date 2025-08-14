@@ -7,6 +7,7 @@ COPY backend/pyproject.toml .
 COPY backend/uv.lock .
 RUN uv sync --locked
 
+RUN mkdir -p /app/frontend/build/web/
 RUN adduser --disabled-password --gecos "" myuser && \
     chown -R myuser:myuser /app
 
@@ -21,8 +22,11 @@ COPY backend/doc_agent /app/backend/doc_agent/
 COPY backend/app.py /app/backend/
 COPY backend/backend_functions.py /app/backend/
 
-RUN mkdir -p /app/frontend
-COPY frontend/build/web /app/frontend/
+# Makes the directory in cloudrun mimic our repository and dev environment
+COPY frontend/build/web /app/frontend/build/web/
+RUN ls -lah /app
+RUN chown -R myuser:myuser /app/frontend/build/
+RUN ls -lah /app/frontend/build/web
 
 USER myuser
 
