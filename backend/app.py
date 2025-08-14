@@ -43,7 +43,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-templates = Jinja2Templates(directory="templates")
 
 
 @app.post("/submit")
@@ -89,6 +88,7 @@ async def submit(
     return user_response
 
 
+templates = Jinja2Templates(directory="templates")
 @app.get("/testui", response_class=HTMLResponse)
 async def main(request: Request):
     """
@@ -105,4 +105,4 @@ async def root():
     """
     return RedirectResponse(url="/index.html")
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/", StaticFiles(directory="../frontend/build/web", html=True), name="static")
