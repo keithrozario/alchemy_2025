@@ -1,4 +1,3 @@
-
 resource "google_artifact_registry_repository" "docker_repo" {
   location      = var.region
   repository_id = "${var.stack_name}-cloudrun-app"
@@ -15,10 +14,6 @@ resource "google_artifact_registry_repository" "docker_repo" {
   }
 }
 
-output registry_name {
-    value = google_artifact_registry_repository.docker_repo.name
-}
-
 data "google_artifact_registry_docker_image" "cloud_run_image" {
   depends_on    = [google_artifact_registry_repository.docker_repo]
   location      = google_artifact_registry_repository.docker_repo.location
@@ -26,21 +21,98 @@ data "google_artifact_registry_docker_image" "cloud_run_image" {
   image_name    = "${var.image_name_and_tag}"
 }
 
+resource "random_string" "random" {
+  length           = 8
+  upper            = false
+  special          = false
+}
+
+ resource "google_storage_bucket" "user_upload_bucket" {
+    name          = "${var.stack_name}-${random_string.random.result}"
+    location      = var.region
+    uniform_bucket_level_access = true
+    force_destroy = true 
+}
+
+/*
+Creates a Service account with the right permissions for Cloudrun
+*/
+
+resource "google_service_account" "cloudrun_service_account" {
+  account_id   = "alchemy-cloudrun"
+  display_name = "Service Account for Alchemy"
+  description  = "This service account is used by My Application."
+}
+
+resource "google_project_iam_member" "cloudrun_service_account" {
+  for_each = toset([
+    "roles/storage.objectCreator",
+    "roles/aiplatform.user",
+    "roles/bigquery.dataEditor"
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.cloudrun_service_account.email}"
+}
+
+
+/*
+Deploys CloudRun instance and enables a public access over the internet UNauthenticated
+*/
+
 resource "google_cloud_run_v2_service" "default" {
-  name     = "${var.stack_name}-cloudrun-service"
+  name     = "${var.stack_name}-webapp"
   location = var.region
   deletion_protection = false
-  # Allow external load balancer access
   ingress = "INGRESS_TRAFFIC_ALL"
 
   template {
+    service_account = google_service_account.cloudrun_service_account.email
+    scaling {
+      min_instance_count = 1 ## keep 1 always on.
+      max_instance_count = 2 
+    }
     containers {
       image = data.google_artifact_registry_docker_image.cloud_run_image.self_link
+      resources {
+        limits = {
+          "cpu" = "1"
+          "memory" = "2Gi"
+        }
+      }
       ports {
         container_port = 8080
       }
+      env {
+        name = "GOOGLE_CLOUD_PROJECT"
+        value = var.project_id
+      }
+      env {
+        name = "LOAN_GCS_BUCKET"
+        value = google_storage_bucket.user_upload_bucket.name
+      }
+      env {
+        name = "BQ_TABLE"
+        value = "placeholder"
+      }
+      env {
+        name = "GRPC_VERBOSITY"
+        value = "ERROR"
+      }
+      env {
+        name = "GLOG_minloglevel"
+        value = "2"
+      }
+      env {
+        name = "GOOGLE_GENAI_USE_VERTEXAI"
+        value = "TRUE"
+      }
+      env {
+        name = "GOOGLE_CLOUD_LOCATION"
+        value = var.region
+      }
     }
-
+    max_instance_request_concurrency = 2
   }
 }
 
@@ -52,3 +124,5 @@ resource "google_cloud_run_service_iam_binding" "default" {
     "allUsers"
   ]
 }
+
+
