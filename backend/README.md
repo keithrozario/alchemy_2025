@@ -73,7 +73,7 @@ If the API is `authenticated` then run the following:
     --min 1 \
     --memory 2Gi \
     --cpu 1 \
-    --set-env-vars GOOGLE_CLOUD_PROJECT=project-alchemy-team12,LOAN_GCS_BUCKET=alchemy-loan-documents-uploads,BQ_TABLE=project-alchemy-team12.project_alchemy_loan_db.hdfc_loan_agent_table
+    --set-env-vars GOOGLE_CLOUD_PROJECT=default-krozario,LOAN_GCS_BUCKET=alchemy-loan-documents-uploads,BQ_TABLE=project-alchemy-team12.project_alchemy_loan_db.hdfc_loan_agent_table
 
 # Sample Output
 
