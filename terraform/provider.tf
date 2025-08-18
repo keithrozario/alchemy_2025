@@ -1,9 +1,5 @@
 # Backend is in a separate project
 terraform {
-  # backend "gcs" {
-  #   bucket = "tf-backends-krozario-gcloud"
-  #   prefix = "terraform/state/alchemy-demo"
-  # }
   required_providers {
     google-beta = {
       source = "hashicorp/google-beta"
@@ -15,7 +11,7 @@ terraform {
     }
   }
 }
-
+data "google_project" "project" {}
 
 provider "google-beta" {
   region  = var.region
@@ -29,3 +25,4 @@ provider "google" {
 data "google_client_config" "this" {
   provider = google
 }
+
