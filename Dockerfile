@@ -12,21 +12,22 @@ RUN adduser --disabled-password --gecos "" myuser && \
     chown -R myuser:myuser /app
 
 ENV PATH="/home/myuser/.local/bin:$PATH"
-ENV GRPC_VERBOSITY=ERROR
-ENV GLOG_minloglevel=2
-ENV GOOGLE_GENAI_USE_VERTEXAI=TRUE
-ENV GOOGLE_CLOUD_LOCATION=us-central1
+
+# Uncomment the following if you wish to test the docker container locally, otherwise cloudbuild will insert these env vars into the container.
+
+# ENV GRPC_VERBOSITY=ERROR
+# ENV GLOG_minloglevel=2
+# ENV GOOGLE_GENAI_USE_VERTEXAI=TRUE
+# ENV GOOGLE_CLOUD_LOCATION=us-central1
+# ENV GOOGLE_CLOUD_PROJECT=default-krozario
 
 COPY backend/templates /app/backend/templates/
 COPY backend/doc_agent /app/backend/doc_agent/
 COPY backend/app.py /app/backend/
 COPY backend/backend_functions.py /app/backend/
 
-# Makes the directory in cloudrun mimic our repository and dev environment
 COPY frontend/build/web /app/frontend/build/web/
-RUN ls -lah /app
 RUN chown -R myuser:myuser /app/frontend/build/
-RUN ls -lah /app/frontend/build/web
 
 USER myuser
 

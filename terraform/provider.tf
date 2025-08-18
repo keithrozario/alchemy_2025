@@ -11,18 +11,14 @@ terraform {
     }
   }
 }
-data "google_project" "project" {}
 
 provider "google-beta" {
-  region  = var.region
-  project = var.project_id
+  region = var.google_cloud_region
 }
 provider "google" {
-  region  = var.region
-  project = var.project_id
+  region = var.google_cloud_region
 }
 
 data "google_client_config" "this" {
   provider = google
 }
-

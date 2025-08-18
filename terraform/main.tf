@@ -1,7 +1,7 @@
 resource "google_artifact_registry_repository" "docker_repo" {
-  location      = var.region
+  location      = data.google_client_config.this.region
   repository_id = "${var.stack_name}-cloudrun-app"
-  description   = "Cloudrun Repository for ${var.stack_name}"
+  description   = "Repository for ${var.stack_name}"
   format        = "DOCKER"
 
   docker_config {
@@ -9,7 +9,11 @@ resource "google_artifact_registry_repository" "docker_repo" {
   }
 
   provisioner "local-exec" {
-    command = "gcloud builds submit --tag ${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.name}/${var.image_name_and_tag}"
+    command = <<EOF
+    gcloud builds submit \
+    --tag ${data.google_client_config.this.region}-docker.pkg.dev/${data.google_client_config.this.project}/${google_artifact_registry_repository.docker_repo.name}/${var.image_name_and_tag} \
+    --region ${data.google_client_config.this.region}
+    EOF
     working_dir = "../"
   }
 }
@@ -29,7 +33,7 @@ resource "random_string" "random" {
 
  resource "google_storage_bucket" "user_upload_bucket" {
     name          = "${var.stack_name}-${random_string.random.result}"
-    location      = var.region
+    location      = data.google_client_config.this.region
     uniform_bucket_level_access = true
     force_destroy = true 
 }
@@ -39,7 +43,7 @@ Creates a Service account with the right permissions for Cloudrun
 */
 
 resource "google_service_account" "cloudrun_service_account" {
-  account_id   = "alchemy-cloudrun"
+  account_id   = "${var.stack_name}-service-account"
   display_name = "Service Account for Alchemy"
   description  = "This service account is used by My Application."
 }
@@ -50,7 +54,7 @@ resource "google_project_iam_member" "cloudrun_service_account" {
     "roles/aiplatform.user",
     "roles/bigquery.dataEditor"
   ])
-  project = var.project_id
+  project = data.google_client_config.this.project
   role    = each.value
   member  = "serviceAccount:${google_service_account.cloudrun_service_account.email}"
 }
@@ -62,7 +66,7 @@ Deploys CloudRun instance and enables a public access over the internet UNauthen
 
 resource "google_cloud_run_v2_service" "default" {
   name     = "${var.stack_name}-webapp"
-  location = var.region
+  location = data.google_client_config.this.region
   deletion_protection = false
   ingress = "INGRESS_TRAFFIC_ALL"
 
@@ -85,7 +89,7 @@ resource "google_cloud_run_v2_service" "default" {
       }
       env {
         name = "GOOGLE_CLOUD_PROJECT"
-        value = var.project_id
+        value = data.google_client_config.this.project
       }
       env {
         name = "LOAN_GCS_BUCKET"
@@ -93,7 +97,7 @@ resource "google_cloud_run_v2_service" "default" {
       }
       env {
         name = "BQ_TABLE"
-        value = "placeholder"
+        value = "placeholder" # currently we don't have a BQ table
       }
       env {
         name = "GRPC_VERBOSITY"
@@ -109,7 +113,7 @@ resource "google_cloud_run_v2_service" "default" {
       }
       env {
         name = "GOOGLE_CLOUD_LOCATION"
-        value = var.region
+        value = data.google_client_config.this.region
       }
     }
     max_instance_request_concurrency = 2
@@ -124,5 +128,3 @@ resource "google_cloud_run_service_iam_binding" "default" {
     "allUsers"
   ]
 }
-
-

@@ -9,3 +9,12 @@ output cloud_run_url {
 output user_upload_bucket {
     value = google_storage_bucket.user_upload_bucket.name
 }
+
+output project_id {
+  value = data.google_client_config.this.project
+}
+
+output region {
+  value = data.google_client_config.this.region
+}
+

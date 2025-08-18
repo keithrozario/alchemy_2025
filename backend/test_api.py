@@ -33,8 +33,9 @@ def get_mime_type(file_path):
 
 
 @click.command()
-@click.option("--env", default="local", type=str)
-def submit_form_with_files(env: str):
+@click.option("--run_url", default="http://localhost:8000/submit", type=str)
+@click.option("--env", default="custom", type=str)
+def submit_form_with_files(env: str, run_url: str):
     """
     Test the API by submitting 6 documents from the user_upload folder
 
@@ -46,15 +47,10 @@ def submit_form_with_files(env: str):
 
     if env == "local":
         url = "http://localhost:8000/submit"
-    elif env == "prod":
-        url = "https://alchemy-loan-webapp-209692124655.us-central1.run.app/submit"
-    elif env == "prod_v3":
-        url = "https://alchemy-backend-v3-209692124655.us-central1.run.app/submit"
-    elif env == "prod_pranshu":
-        url = "https://alchemy-backend-v3-941915649485.us-central1.run.app/submit"
-    else:
-        url = "http://localhost:8000/submit"
+    elif env == "custom":
+        url = f"{run_url}submit"
 
+    
     form_data = {
         "full_name": "John Doe",
         "loan_type": "Personal Loan",
