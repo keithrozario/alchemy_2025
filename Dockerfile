@@ -13,7 +13,7 @@ RUN adduser --disabled-password --gecos "" myuser && \
 
 ENV PATH="/home/myuser/.local/bin:$PATH"
 
-# Uncomment the following if you wish to test the docker container locally, otherwise cloudbuild will insert these env vars into the container.
+# Uncomment the following if you wish to test the docker container locally, otherwise these will be added to the cloudrun environment via terraform
 
 # ENV GRPC_VERBOSITY=ERROR
 # ENV GLOG_minloglevel=2
